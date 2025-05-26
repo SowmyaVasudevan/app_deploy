@@ -1,0 +1,10 @@
+#!/bin/bash
+
+IMAGE_NAME="sowmya056/react-app"
+TAG="dev"
+
+echo "Building Docker image..."
+docker build -t $IMAGE_NAME:$TAG .
+
+echo "Pushing to Docker Hub..."
+docker push $IMAGE_NAME:$TAG
