@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        IMAGE_NAME = "sowmya056/react-app-dev"
     }
 
     stages {
@@ -14,7 +14,11 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_CREDENTIALS_USR',
+                    passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW'
+                )]) {
                     sh './build.sh'
                 }
             }
@@ -22,28 +26,21 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh 'docker push sowmya056/react-app-dev:latest'
-                }
+                echo '✅ Image already pushed in previous step'
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    sh './deploy.sh'
-                }
+                echo '🚀 Deploy step goes here'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully.'
-        }
         failure {
             echo 'Pipeline failed.'
         }
     }
 }
+
