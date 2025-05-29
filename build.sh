@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e  # Exit on any error
 
-IMAGE_NAME="sowmya056/react-app"
+IMAGE_NAME="sowmya056/react-app:dev"
 TAG="dev"
 
 echo "🔨 Building Docker image..."
@@ -13,7 +13,7 @@ docker push $IMAGE_NAME:$TAG
 echo "✅ Build and push completed successfully."
 #!/bin/bash
 
-IMAGE_NAME="sowmya056/react-app"
+IMAGE_NAME="sowmya056/react-app:dev"
 TAG="dev"
 
 echo "Building Docker image..."
