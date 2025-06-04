@@ -1,46 +1,24 @@
 pipeline {
     agent any
-
     environment {
-        IMAGE_NAME = "sowmya056/react-app-dev"
+        IMAGE_NAME = 'sowmya056/react-app-dev'
+        TAG = 'v1'
     }
-
     stages {
-        stage('Checkout') {
+        stage('Docker Login') {
             steps {
-                git branch: 'dev', url: 'https://github.com/SowmyaVasudevan/app_deploy.git'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKERHUB_CREDENTIALS_USR',
-                    passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW'
-                )]) {
-                    sh './build.sh'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
                 }
             }
         }
-
-        stage('Push to Docker Hub') {
+        stage('Docker Build & Push') {
             steps {
-                echo '✅ Image already pushed in previous step'
+                sh '''
+                docker build -t $IMAGE_NAME:$TAG .
+                docker push $IMAGE_NAME:$TAG
+                '''
             }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploy step goes here'
-            }
-        }
-    }
-
-    post {
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }
-
